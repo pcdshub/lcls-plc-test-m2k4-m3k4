@@ -1,0 +1,247 @@
+
+
+DUTs
+----
+
+
+GVLs
+----
+
+
+POUs
+----
+
+
+FB_MotionStageStats
+^^^^^^^^^^^^^^^^^^^
+
+::
+
+    FUNCTION_BLOCK FB_MotionStageStats EXTENDS FB_BasicStats
+    VAR_INPUT
+    	Axis : DUT_MotionStage;
+    END_VAR
+    VAR_OUTPUT
+    END_VAR
+    VAR
+    	aActPos : ARRAY [0..ARRAY_SIZE] OF LREAL;
+    	idx: UINT;
+    END_VAR
+    VAR CONSTANT
+    	ARRAY_SIZE : UINT := 500;
+    END_VAR
+    aActPos[idx] := Axis.Axis.NcToPlc.ActPos;
+
+    idx := (idx + 1) MOD ARRAY_SIZE;
+
+    SUPER^(aSignal:=aActPos, bAlwaysCalc:=NOT bReset);
+
+    END_FUNCTION_BLOCK
+
+
+Related:
+    * `FB_MotionStageStats`_
+
+
+FB_PAT
+^^^^^^
+
+::
+
+    FUNCTION_BLOCK FB_PAT
+    VAR_INPUT
+    	Velocity : LREAL;
+    END_VAR
+    VAR_OUTPUT
+    	FwLimPos : LREAL; // Positive limit position
+    	BwLimPos : LREAL; // 
+    END_VAR
+    VAR_IN_OUT
+    	Stage : DUT_MotionStage;
+    END_VAR
+    VAR
+    	fbMicroStepCount : FB_MicroStepCountTest;
+    	
+    	fbMove: MC_Jog;
+    	tFwLim: F_TRIG;
+    	tBwLim: F_TRIG;
+    	Dir: INT;
+    END_VAR
+    // Relative move until limit, reverse and repeat, record positions, do math and spit out travel range
+
+    tFwLim(CLK:=Stage.bLimitForwardEnable);
+    tBwLim(CLK:=Stage.bLimitBackwardEnable);
+
+    WHILE Stage.bLimitBackwardEnable AND Stage.bLimitForwardEnable DO
+    	IF tFwLim.Q OR tBwLim.Q THEN
+    		IF (Dir = 1 AND tBwLim.Q) OR (Dir = -1 AND tFwLim.Q) THEN
+    			// Error, limits backwards
+    			EXIT;
+    		END_IF
+    		
+    		IF tFwLim.Q THEN
+    			FwLimPos := Stage.Axis.NcToPlc.ActPos;
+    		ELSIF tBwLim.Q THEN
+    			BwLimPos := Stage.Axis.NcToPlc.ActPos;
+    		END_IF
+    		
+    		
+    	END_IF
+    	
+    	
+    	
+    END_WHILE
+
+    // Discover minimum step size in one direction
+
+    // Attempt minimum step size in alternating direction
+
+    fbMove(Axis:=Stage.Axis, Velocity:=Velocity, Mode:=E_JogMode.MC_JOGMODE_CONTINOUS);
+
+    END_FUNCTION_BLOCK
+
+
+
+
+MAIN
+^^^^
+
+::
+
+    PROGRAM MAIN
+    VAR
+    	{attribute 'TcLinkTo' := '.bLimitForwardEnable:=TIIB[M2K4 X]^STM Status^Status^Digital input 1;
+                                  .bLimitBackwardEnable:=TIIB[M2K4 X]^STM Status^Status^Digital input 2'}
+    	M1 : DUT_MotionStage := (nCommand:=ENUM_EpicsMotorCmd.EPICS_MOTOR_MOVE_ABS);
+    	fbMotionStageM1 : FB_MotionStage;
+    	{attribute 'TcLinkTo' := '.bLimitForwardEnable:=TIIB[M2K4 Y]^STM Status^Status^Digital input 1;
+                                  .bLimitBackwardEnable:=TIIB[M2K4 Y]^STM Status^Status^Digital input 2'}
+    	M2 : DUT_MotionStage := (nCommand:=ENUM_EpicsMotorCmd.EPICS_MOTOR_MOVE_ABS);
+    	fbMotionStageM2 : FB_MotionStage;
+    	{attribute 'TcLinkTo' := '.bLimitForwardEnable:=TIIB[M2K4 rY]^STM Status^Status^Digital input 1;
+                                  .bLimitBackwardEnable:=TIIB[M2K4 rY]^STM Status^Status^Digital input 2'}
+    	M3 : DUT_MotionStage := (nCommand:=ENUM_EpicsMotorCmd.EPICS_MOTOR_MOVE_ABS);
+    	fbMotionStageM3 : FB_MotionStage;
+    	
+    	{attribute 'TcLinkTo' := '.bLimitForwardEnable:=TIIB[M3K4 X]^STM Status^Status^Digital input 1;
+                                  .bLimitBackwardEnable:=TIIB[M3K4 X]^STM Status^Status^Digital input 2'}
+    	M4 : DUT_MotionStage := (nCommand:=ENUM_EpicsMotorCmd.EPICS_MOTOR_MOVE_ABS);
+    	fbMotionStageM4 : FB_MotionStage;
+    	{attribute 'TcLinkTo' := '.bLimitForwardEnable:=TIIB[M3K4 Y]^STM Status^Status^Digital input 1;
+                                  .bLimitBackwardEnable:=TIIB[M3K4 Y]^STM Status^Status^Digital input 2'}
+    	M5 : DUT_MotionStage := (nCommand:=ENUM_EpicsMotorCmd.EPICS_MOTOR_MOVE_ABS);
+    	fbMotionStageM5 : FB_MotionStage;
+    	{attribute 'TcLinkTo' := '.bLimitForwardEnable:=TIIB[M3K4 rX]^STM Status^Status^Digital input 1;
+                                  .bLimitBackwardEnable:=TIIB[M3K4 rX]^STM Status^Status^Digital input 2'}
+    	M6 : DUT_MotionStage := (nCommand:=ENUM_EpicsMotorCmd.EPICS_MOTOR_MOVE_ABS);
+    	fbMotionStageM6 : FB_MotionStage;
+    	
+    	{attribute 'TcLinkTo' := 'TIIB[M2K4 rY]^STM Synchron info data^Info data 1;'}
+    	PhaseA AT %I* : UINT;
+    	
+    	{attribute 'TcLinkTo' := 'TIIB[M2K4 rY]^STM Synchron info data^Info data 2;'}
+    	PhaseB AT %I* : UINT;
+    	
+    	fbStepSizeTest : FB_MicroStepCountTest := (
+    		fStepSize := 0.00015625,
+    		nSteps := 1000,
+    		fMicroStep := 0.00015625,
+    		fVelocity := 1,
+    		tSettleTime := T#1S);
+    		
+    	fbStepSizeTest_Y : FB_MicroStepCountTest := (
+    		fStepSize := 0.0097656,
+    		nSteps := 1000,
+    		fMicroStep := 0.0097656,
+    		fVelocity := 0.5,
+    		tSettleTime := T#1S);
+    		
+    	fbStepSizeTest_rY : FB_MicroStepCountTest := (
+    		fStepSize := 0.0013021,
+    		nSteps := 1000,
+    		fMicroStep := 0.0013021,
+    		fVelocity := 10,
+    		tSettleTime := T#1S);
+
+
+    		
+    	fbStepSizeTest_M3K4X : FB_MicroStepCountTest := (
+    		fStepSize := 0.00015625,
+    		nSteps := 1000,
+    		fMicroStep := 0.00015625,
+    		fVelocity := 1,
+    		tSettleTime := T#1S);
+    		
+    	fbStepSizeTest_M3K4Y : FB_MicroStepCountTest := (
+    		fStepSize := 0.0097656,
+    		nSteps := 1000,
+    		fMicroStep := 0.0097656,
+    		fVelocity := 0.5,
+    		tSettleTime := T#1S);
+    		
+    	fbStepSizeTest_M3K4r : FB_MicroStepCountTest := (
+    		fStepSize := 0.0013021,
+    		nSteps := 1000,
+    		fMicroStep := 0.0013021,
+    		fVelocity := 10,
+    		tSettleTime := T#1S);
+    	
+    	fbM1Stats : FB_MotionStageStats;
+    	fbM2Stats : FB_MotionStageStats;
+    	fbM3Stats : FB_MotionStageStats;
+    	
+    	fbM4Stats : FB_MotionStageStats;
+    	fbM5Stats : FB_MotionStageStats;
+    	fbM6Stats : FB_MotionStageStats;
+    	
+    	bSTOEnable1 AT %I* : BOOL;
+    	bSTOEnable2 AT %I* : BOOL;
+    	
+    	END_VAR
+    M1.nEnableMode;
+    M2.nEnableMode;
+    M3.nEnableMode;
+
+    M4.nEnableMode;
+    M5.nEnableMode;
+    M6.nEnableMode;
+
+    M1.bHardwareEnable := bSTOEnable1 AND bSTOEnable2;
+    M2.bHardwareEnable := bSTOEnable1 AND bSTOEnable2;
+    M3.bHardwareEnable := bSTOEnable1 AND bSTOEnable2;
+
+    M4.bHardwareEnable := bSTOEnable1 AND bSTOEnable2;
+    M5.bHardwareEnable := bSTOEnable1 AND bSTOEnable2;
+    M6.bHardwareEnable := bSTOEnable1 AND bSTOEnable2;
+
+
+    fbMotionStageM1(stMotionStage:=M1);
+    fbMotionStageM2(stMotionStage:=M2);
+    fbMotionStageM3(stMotionStage:=M3);
+
+    fbMotionStageM4(stMotionStage:=M4);
+    fbMotionStageM5(stMotionStage:=M5);
+    fbMotionStageM6(stMotionStage:=M6);
+
+    fbM1Stats(Axis:=M1);
+    fbM2Stats(Axis:=M2);
+    fbM3Stats(Axis:=M3);
+
+    fbM4Stats(Axis:=M4);
+    fbM5Stats(Axis:=M5);
+    fbM6Stats(Axis:=M6);
+
+    fbStepSizeTest(Axis:=M1.Axis);
+    fbStepSizeTest_Y(Axis:=M2.Axis);
+    fbStepSizeTest_rY(Axis:=M3.Axis);
+
+    fbStepSizeTest_M3K4X(Axis:=M4.Axis);
+    fbStepSizeTest_M3K4Y(Axis:=M5.Axis);
+    fbStepSizeTest_M3K4r(Axis:=M6.Axis);
+
+    END_PROGRAM
+
+
+Related:
+    * `FB_MotionStageStats`_
+

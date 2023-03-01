@@ -1,0 +1,189 @@
+
+NC Settings
+-----------
+
+.. csv-table::
+    :header: Axis ID, Name
+    :align: center
+
+        1, M2K4 X
+        2, M2K4 Y
+        3, M2K4 rY
+        4, M3K4 X
+        5, M3K4 Y
+        6, M3K4 rX
+
+
+
+Axis 1: M2K4 X
+^^^^^^^^^^^^^^
+
+.. csv-table::
+    :header: Setting, Value
+    :align: center
+
+    Axis ID, 1
+    Name, M2K4 X
+    AxisFolder, M2K4
+    AxisType, 1
+    CreateSymbols, true
+    Dynamic:Acceleration, 100
+    Dynamic:AccelerationMaximum, 100
+    Dynamic:Deceleration, 100
+    Dynamic:DecelerationMaximum, 100
+    Dynamic:DelayTime, 0.008
+    Enc:EncType, 29
+    Enc:Inc:RefSoftSyncMask, #x0000ffff
+    Enc:MaxCount, #xffffffff
+    Enc:Offset, -30.6825
+    Enc:ScaleFactorNumerator, 5e-06
+    Id, 1
+    OtherSettings:AllowMotionCmdToSlave, true
+    Velo:Maximum, 20
+
+
+
+Axis 2: M2K4 Y
+^^^^^^^^^^^^^^
+
+.. csv-table::
+    :header: Setting, Value
+    :align: center
+
+    Axis ID, 2
+    Name, M2K4 Y
+    AxisFolder, M2K4
+    AxisType, 1
+    CreateSymbols, true
+    Dynamic:Acceleration, 10
+    Dynamic:AccelerationMaximum, 10
+    Dynamic:Deceleration, 10
+    Dynamic:DecelerationMaximum, 10
+    Dynamic:DelayTime, 0.008
+    Dynamic:Jerk, 15
+    Enc:EncType, 29
+    Enc:Inc:RefSoftSyncMask, #x0000ffff
+    Enc:MaxCount, #xffffffff
+    Enc:Offset, -30.18
+    Enc:ScaleFactorNumerator, 5e-06
+    Id, 2
+    OtherSettings:AllowMotionCmdToSlave, true
+    Velo:Maximum, 1.25
+
+
+
+Axis 3: M2K4 rY
+^^^^^^^^^^^^^^^
+
+.. csv-table::
+    :header: Setting, Value
+    :align: center
+
+    Axis ID, 3
+    Name, M2K4 rY
+    AxisFolder, M2K4
+    AxisType, 1
+    CreateSymbols, true
+    Dynamic:Acceleration, 200
+    Dynamic:AccelerationMaximum, 200
+    Dynamic:Deceleration, 200
+    Dynamic:DecelerationMaximum, 200
+    Dynamic:DelayTime, 0.008
+    Enc:EncType, 29
+    Enc:Inc:RefSoftSyncMask, #x0000ffff
+    Enc:MaxCount, #xffffffff
+    Enc:Offset, -194502.025
+    Enc:ScaleFactorNumerator, 0.005348
+    General:UnitName, urad
+    Id, 3
+    OtherSettings:AllowMotionCmdToSlave, true
+    Velo:Maximum, 140.845
+
+
+
+Axis 4: M3K4 X
+^^^^^^^^^^^^^^
+
+.. csv-table::
+    :header: Setting, Value
+    :align: center
+
+    Axis ID, 4
+    Name, M3K4 X
+    AxisFolder, M3K4
+    AxisType, 1
+    CreateSymbols, true
+    Dynamic:Acceleration, 100
+    Dynamic:AccelerationMaximum, 100
+    Dynamic:Deceleration, 100
+    Dynamic:DecelerationMaximum, 100
+    Dynamic:DelayTime, 0.008
+    Enc:EncType, 29
+    Enc:Inc:RefSoftSyncMask, #x0000ffff
+    Enc:MaxCount, #xffffffff
+    Enc:Offset, -31.1
+    Enc:ScaleFactorNumerator, 5e-06
+    Id, 4
+    OtherSettings:AllowMotionCmdToSlave, true
+    Velo:Maximum, 20
+
+
+
+Axis 5: M3K4 Y
+^^^^^^^^^^^^^^
+
+.. csv-table::
+    :header: Setting, Value
+    :align: center
+
+    Axis ID, 5
+    Name, M3K4 Y
+    AxisFolder, M3K4
+    AxisType, 1
+    CreateSymbols, true
+    Dynamic:Acceleration, 10
+    Dynamic:AccelerationMaximum, 10
+    Dynamic:Deceleration, 10
+    Dynamic:DecelerationMaximum, 10
+    Dynamic:DelayTime, 0.008
+    Dynamic:Jerk, 15
+    Enc:EncType, 29
+    Enc:Inc:RefSoftSyncMask, #x0000ffff
+    Enc:MaxCount, #xffffffff
+    Enc:Offset, -29.68
+    Enc:ScaleFactorNumerator, 5e-06
+    Id, 5
+    OtherSettings:AllowMotionCmdToSlave, true
+    Velo:Maximum, 1.25
+
+
+
+Axis 6: M3K4 rX
+^^^^^^^^^^^^^^^
+
+.. csv-table::
+    :header: Setting, Value
+    :align: center
+
+    Axis ID, 6
+    Name, M3K4 rX
+    AxisFolder, M3K4
+    AxisType, 1
+    CreateSymbols, true
+    Dynamic:Acceleration, 300
+    Dynamic:AccelerationMaximum, 300
+    Dynamic:Deceleration, 300
+    Dynamic:DecelerationMaximum, 300
+    Dynamic:DelayTime, 0.008
+    Dynamic:Jerk, 900
+    Enc:EncType, 29
+    Enc:Inc:RefSoftSyncMask, #x0000ffff
+    Enc:MaxCount, #xffffffff
+    Enc:Offset, -136547
+    Enc:ScaleFactorNumerator, 0.002577
+    General:UnitName, urad
+    Id, 6
+    OtherSettings:AllowMotionCmdToSlave, true
+    Velo:Maximum, 140.84
+
+
